@@ -1,0 +1,110 @@
+TASK 1
+
+Create or replace table shopping_history
+(
+    product varchar(39) not null,
+    quantity integer not null,
+    Unit_price integer not null
+);
+
+Insert into shopping_history values
+('milk',5,10),
+('Bread',3,20),
+('Butter',1,45),
+('Curd',4,60),
+('Onion',5,20);
+
+select * from shopping_history;
+
+Insert into shopping_history values
+('milk',5,30),
+('Bread',2,10),
+('Butter',5,10),
+('Curd',2,10),
+('Onion',1,10);
+
+select product,sum(quantity * unit_price)as Total_price from shopping_history group by product;
+
+
+
+Task 2
+
+create or replace table phones
+(
+    name varchar(30) not null unique,
+    phone_number integer not null unique
+);
+
+create or replace table calls1
+(
+    id integer not null,
+    caller integer not null,
+    calle integer not null,
+    duration integer not null,
+    unique(id)
+);
+
+Insert into phones values
+('Jack',1234),
+('Lena',3333),
+('Mark',9999),
+('Anna',7582);
+
+select * from phones;
+
+insert into calls1 values
+(25,1234,7582,8),
+(7,9999,7582,1),
+(18,9999,3333,4),
+(2,7582,3333,3),
+(3,3333,1234,1),
+(21,3333,1234,1)
+
+select * from calls1;
+
+select name from 
+(
+select name,sum(total_duration)as duration from 
+(
+Select name,sum(duration)as total_duration from phones p join calls1 c on p.phone_number=c.calle group by name
+union
+Select name,sum(duration)as total_duration from phones p join calls1 c on p.phone_number=c.caller group by name
+) 
+group by name having duration>=10 order by name
+);
+
+
+
+
+
+Task 3
+
+Create or replace table transactions
+(
+amount integer not null,
+date date not null
+)
+
+insert into transactions values
+(1000,'2020-01-06'),
+(-10,'2020-01-14'),
+(-75,'2020-01-20'),
+(-5,'2020-01-25'),
+(-4,'2020-01-29'),
+(2000,'2020-03-10'),
+(-75,'2020-03-12'),
+(-20,'2020-03-15'),
+(40,'2020-03-15'),
+(-50,'2020-03-17'),
+(200,'2020-10-10'),
+(-200,'2020-10-10');
+
+select * from transactions;
+
+select (select sum(amount) from transactions)-((12-cnt) *5) as balance from 
+(
+select count(*) as cnt from 
+(
+select count(amount)as no_of_transactions,month(date)as month from transactions where amount<0 group by month having no_of_transactions >= 3 and sum(amount)<=-100
+)
+);
